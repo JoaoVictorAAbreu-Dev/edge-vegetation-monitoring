@@ -2,3 +2,5 @@
 .venv/
 __pycache__/
 *.pyc
+# Relatórios gerados ficam locais; os exemplos versionados estão em reports/examples/.
+reports/*.md

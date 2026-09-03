@@ -1,0 +1,12 @@
+services:
+  consumidor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: grupo5-consumidor-mqtt
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      # Mantém os relatórios acessíveis no computador do usuário.
+      - ./reports:/app/reports

@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+reports/*.md
+README.md
+tests/
+hardware/
+simulation/
