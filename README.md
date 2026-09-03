@@ -1,4 +1,4 @@
-# Grupo 5 — Monitor de Sensor ESP32 com MQTT e CrewAI
+# Monitor de Sensor ESP32 com MQTT e CrewAI
 
 ## Objetivo
 
