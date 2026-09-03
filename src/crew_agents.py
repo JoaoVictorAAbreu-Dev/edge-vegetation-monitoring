@@ -7,6 +7,7 @@ from .config import TEMPERATURE_MAX_C, TEMPERATURE_MIN_C
 
 def build_crew() -> Crew:
     """Monta uma equipe sequencial para cada leitura recebida via MQTT."""
+    # Este agente interpreta os dados e verifica se estão dentro da especificação.
     analista = Agent(
         role="Analista de telemetria IoT",
         goal=(
@@ -22,6 +23,7 @@ def build_crew() -> Crew:
         allow_delegation=False,
     )
 
+    # Este agente transforma a análise técnica em um relatório executivo.
     redator = Agent(
         role="Redator de relatórios para a direção",
         goal=(
@@ -39,6 +41,7 @@ def build_crew() -> Crew:
         allow_delegation=False,
     )
 
+    # Primeira tarefa: avaliar a leitura e identificar riscos ou conformidade.
     avaliar = Task(
         description=(
             "Analise a leitura abaixo. Sensor: {sensor}. Valor: {valor} {unidade}. "
@@ -54,6 +57,8 @@ def build_crew() -> Crew:
         agent=analista,
     )
 
+    # Segunda tarefa: redigir o relatório para sustentação ou direção.
+    # O contexto recebe o resultado da tarefa de avaliação.
     gerar_relatorio = Task(
         description=(
             "Com base na análise anterior, escreva um relatório em Markdown. O sistema "
@@ -74,6 +79,7 @@ def build_crew() -> Crew:
         context=[avaliar],
     )
 
+    # A execução sequencial garante que o redator receba primeiro a análise.
     return Crew(
         agents=[analista, redator],
         tasks=[avaliar, gerar_relatorio],
@@ -84,6 +90,7 @@ def build_crew() -> Crew:
 
 def generate_report(measurement: dict) -> str:
     """Executa a equipe para uma medição normalizada."""
+    # Cria uma nova execução da equipe para cada mensagem MQTT recebida.
     crew = build_crew()
     result = crew.kickoff(
         inputs={

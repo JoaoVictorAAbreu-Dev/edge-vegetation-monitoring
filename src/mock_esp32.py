@@ -12,6 +12,7 @@ from .config import MQTT_BROKER, MQTT_PORT, MQTT_TOPIC
 
 
 def build_reading(mode: str) -> dict:
+    # Gera uma temperatura dentro ou fora da faixa para simular o sensor.
     if mode == "normal":
         value = round(random.uniform(20, 25), 2)
     elif mode == "alerta":
@@ -19,6 +20,7 @@ def build_reading(mode: str) -> dict:
     else:
         value = round(random.uniform(10, 38), 2)
 
+    # O formato do dicionário é o mesmo que o ESP32 publica via MQTT.
     return {
         "sensor": "temperatura_ambiente",
         "valor": value,
@@ -29,12 +31,14 @@ def build_reading(mode: str) -> dict:
 
 
 def main() -> None:
+    # Permite demonstrar a aplicação sem precisar de uma placa física.
     parser = argparse.ArgumentParser(description="Publica dados mockados do ESP32 via MQTT")
     parser.add_argument("--modo", choices=["normal", "alerta", "aleatorio"], default="normal")
     parser.add_argument("--quantidade", type=int, default=1)
     parser.add_argument("--intervalo", type=float, default=2.0)
     args = parser.parse_args()
 
+    # Publica uma ou mais leituras no tópico configurado.
     for index in range(args.quantidade):
         reading = build_reading(args.modo)
         payload = json.dumps(reading, ensure_ascii=False)

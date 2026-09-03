@@ -2,12 +2,14 @@
 #include <PubSubClient.h>
 #include <DHT.h>
 
+// Versão para simulação: o Wokwi fornece a rede virtual Wokwi-GUEST.
 const char* WIFI_SSID = "Wokwi-GUEST";
 const char* WIFI_PASSWORD = "";
 const char* MQTT_BROKER = "broker.hivemq.com";
 const int MQTT_PORT = 1883;
 const char* MQTT_TOPIC = "grupo5/esp32/temperatura";
 
+// O DHT22 simulado envia temperatura e umidade pelo GPIO 15.
 #define DHT_PIN 15
 #define DHT_TYPE DHT22
 DHT dht(DHT_PIN, DHT_TYPE);
@@ -15,6 +17,7 @@ WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
 unsigned long lastPublish = 0;
 
+// Conecta o ESP32 simulado à rede disponibilizada pelo Wokwi.
 void connectWiFi() {
   Serial.print("Conectando ao Wokwi-GUEST");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 6);
@@ -25,6 +28,7 @@ void connectWiFi() {
   Serial.println(" conectado");
 }
 
+// Mantém a tentativa de conexão com o broker MQTT até obter sucesso.
 void connectMQTT() {
   while (!mqtt.connected()) {
     String clientId = "WOKWI-GRUPO5-" + String((uint32_t)(ESP.getEfuseMac() & 0xFFFFFFFF), HEX);
@@ -39,6 +43,7 @@ void connectMQTT() {
   }
 }
 
+// Lê o sensor simulado e publica uma mensagem JSON no tópico do Grupo 5.
 void publishReading() {
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
@@ -47,6 +52,7 @@ void publishReading() {
     return;
   }
 
+  // Este formato é compatível com o consumidor Python/CrewAI.
   String payload = "{\"sensor\":\"temperatura_ambiente\",\"valor\":";
   payload += String(temperature, 2);
   payload += ",\"umidade\":";
@@ -59,6 +65,7 @@ void publishReading() {
   Serial.println(payload);
 }
 
+// Inicialização executada uma única vez no início da simulação.
 void setup() {
   Serial.begin(115200);
   dht.begin();
@@ -66,6 +73,7 @@ void setup() {
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
 }
 
+// Reestabelece conexões e publica uma leitura a cada cinco segundos.
 void loop() {
   if (WiFi.status() != WL_CONNECTED) connectWiFi();
   if (!mqtt.connected()) connectMQTT();

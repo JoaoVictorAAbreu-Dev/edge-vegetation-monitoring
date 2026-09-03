@@ -7,6 +7,7 @@ from .mqtt_consumer import process_payload, run_consumer
 
 
 def main() -> None:
+    # O programa oferece dois modos: escuta MQTT ou teste local.
     parser = argparse.ArgumentParser(description="Monitor IoT com CrewAI e MQTT")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -15,9 +16,12 @@ def main() -> None:
     teste.add_argument("--valor", type=float, required=True, help="Temperatura em °C")
 
     args = parser.parse_args()
+
+    # No modo ouvir, o processo permanece aguardando mensagens do ESP32.
     if args.command == "ouvir":
         run_consumer()
     else:
+        # No modo teste, monta uma mensagem equivalente à do ESP32.
         payload = {
             "sensor": "temperatura_ambiente",
             "valor": args.valor,
